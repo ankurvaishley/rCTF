@@ -23,12 +23,20 @@ module.exports = {
     }
   },
   handler: async ({ req, user }) => {
-    if (!config.verifyEmail) {
-      return responses.badEndpoint
-    }
     const email = util.normalize.normalizeEmail(req.body.email)
     if (!emailValidator.validate(email)) {
       return responses.badEmail
+    }
+
+    if (!config.verifyEmail) {
+      const result = await database.auth.updateUser({
+        id: user.id,
+        email
+      })
+      if (result === undefined) {
+        return responses.badUnknownUser
+      }
+      return responses.goodEmailSet
     }
 
     const checkUser = await database.auth.getUserByEmail({

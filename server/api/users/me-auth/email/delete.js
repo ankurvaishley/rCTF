@@ -1,4 +1,3 @@
-const config = require('../../../../../config/server')
 const { responses } = require('../../../../responses')
 const database = require('../../../../database')
 
@@ -7,9 +6,6 @@ module.exports = {
   path: '/users/me/auth/email',
   requireAuth: true,
   handler: async ({ user }) => {
-    if (!config.verifyEmail) {
-      return responses.badEndpoint
-    }
     let result
     try {
       result = await database.auth.removeEmail({ id: user.id })
